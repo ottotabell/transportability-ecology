@@ -12,7 +12,7 @@ sites <- sites %>% mutate(elevation = prism_elev_m, site_id = curbid,
 set.seed(260113)
 
 # Generate site-level data
-generate_data <- function() {
+generate_data <- function(fixed_value = -1) {
   
   
   # Standardize environmental variables for modeling
@@ -69,6 +69,10 @@ generate_data <- function() {
     ) %>%
     ungroup()
   
+  # If we set a (positive) fixed value, we overwrite the sampled canopy cover
+  # values but instead use the fixed canopy cover from now on.
+  if (fixed_value >= 0) sites$canopy_cover = fixed_value
+  
   sites <- sites %>% mutate(
     seasonal_baseline = case_when(
       season == "spring" ~ 12,
@@ -101,6 +105,18 @@ generate_data <- function() {
 }
 
 full_data <- generate_data()
+#fixed_data <- generate_data(fixed_value = 55)
+
+# Quick function for simulating oxygen values with fixed canopy cover
+sim_true_value <- function(fixed_value = 55) {
+  fixed_data <- generate_data(fixed_value = fixed_value)
+  return(mean(fixed_data[fixed_data$watershed == "Fanno Creek", ]$dissolved_oxygen))
+}
+
+# true_vals <- replicate(2000, sim_true_value(55))
+#6.318168 Fanno
+
+# Function for estimating the causal effect with two-door formula
 
 frontdoor_effect <- function(canopy, data_fit, data_pred = NULL) {
   if (is.null(data_pred)) data_pred <- data_fit
@@ -108,11 +124,8 @@ frontdoor_effect <- function(canopy, data_fit, data_pred = NULL) {
   
   data_matrix <- cbind(data_pred$precipitation, data_pred$temperature, data_pred$elevation)
   
-  mu_est <- colMeans(data_matrix)
-  Sigma_est <- cov(data_matrix)
-  samples <- mvrnorm(n = 10000, mu = mu_est, Sigma = Sigma_est)
+  samples <- data.frame(data_matrix)
   
-  samples <- data.frame(samples)
   colnames(samples) = c("precipitation", "temperature", "elevation")
   
   m1 <- lm(water_temp ~ canopy_cover + precipitation + temperature + elevation, data = data_fit)
@@ -130,6 +143,7 @@ frontdoor_effect <- function(canopy, data_fit, data_pred = NULL) {
   return(p)
 }
 
+# Splitting the data into target and source populations.
 d0 <- full_data[full_data$watershed != "Fanno Creek", ]
 d1 <- full_data[full_data$watershed == "Fanno Creek", ]
 
@@ -231,7 +245,7 @@ run_single_simulation <- function(sim_id, x1_fix = 55) {
   }, error = function(e) NA)
   
   # Return results
-  data.frame(
+  d <- data.frame(
     sim_id = sim_id,
     m0_biased_source = est0,
     m1_biased_target = est1,
@@ -243,6 +257,7 @@ run_single_simulation <- function(sim_id, x1_fix = 55) {
     m7_frontdoor_target = est7,
     m8_frontdoor_transport = est8
   )
+  return(d)
 }
 
 n_sims <- 5000 
@@ -286,7 +301,7 @@ results_long <- results_df %>%
 # Create boxplot
 p1 <- ggplot(results_long, aes(x = method, y = estimate, fill = method)) +
   geom_boxplot(alpha = 0.7) +
-  geom_hline(yintercept = median(results_df$m4_correct_target, na.rm = TRUE), 
+  geom_hline(yintercept = median(6.318168, na.rm = TRUE), 
              linetype = "dashed", color = "red", size = 1) +
   labs(
     x = "Estimation Method",

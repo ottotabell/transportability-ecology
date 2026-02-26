@@ -20,22 +20,22 @@ frontdoor_effect <- function(canopy, data_fit, data_pred = NULL) {
   if (is.null(data_pred)) data_pred <- data_fit
   p <- numeric(length(canopy))
   
-  data_matrix <- cbind(data_pred$prism_atemp_max_C, data_pred$prism_elev_m, data_pred$prism_ppt_mm)
-
-  mu_est <- colMeans(data_matrix)
-  Sigma_est <- cov(data_matrix)
-  samples <- mvrnorm(n = nrow(data_pred), mu = mu_est, Sigma = Sigma_est)
-  
-  samples <- data.frame(samples)
-  colnames(samples) = c("prism_atemp_max_C", "prism_elev_m", "prism_ppt_mm")
-  samples$season <- data_pred$season
-  
-  m1 <- gam(temp_c ~ nlcd_2021_ttc_overwater_. + prism_elev_m + 
+  # data_matrix <- cbind(data_pred$prism_atemp_max_C, data_pred$prism_elev_m, data_pred$prism_ppt_mm)
+  # 
+  # mu_est <- colMeans(data_matrix)
+  # Sigma_est <- cov(data_matrix)
+  # samples <- mvrnorm(n = nrow(data_pred), mu = mu_est, Sigma = Sigma_est)
+  # 
+  # samples <- data.frame(samples)
+  # colnames(samples) = c("prism_atemp_max_C", "prism_elev_m", "prism_ppt_mm")
+  # samples$season <- data_pred$season
+  samples <- data_pred
+  m1 <- glm(temp_c ~ nlcd_2021_ttc_overwater_. + prism_elev_m + 
               prism_atemp_max_C + prism_ppt_mm, data = data_fit)
   
-  m2 <- gam(nlcd_2021_ttc_overwater_. ~ prism_elev_m + prism_atemp_max_C + prism_ppt_mm, data = data_fit)
+  m2 <- glm(nlcd_2021_ttc_overwater_. ~ prism_elev_m + prism_atemp_max_C + prism_ppt_mm, data = data_fit)
   
-  m3 <- gam(do_mgl ~ temp_c + nlcd_2021_ttc_overwater_. + prism_elev_m + 
+  m3 <- glm(do_mgl ~ temp_c + nlcd_2021_ttc_overwater_. + prism_elev_m + 
               prism_atemp_max_C + prism_ppt_mm + season, data = data_fit)
   
   for (i in 1:length(p)) {

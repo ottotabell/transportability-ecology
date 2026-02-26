@@ -8,6 +8,7 @@ w1 -> w2
 w2 -> y
 z2 -> y
 z2 -> w1
+z2 -> w2
 z1 -> y
 z1 -> x
 z2 -> z1
@@ -25,15 +26,19 @@ graph <- "
 x -> w1
 w1 -> w2
 w2 -> y
+x -> y
 z2 -> y
 z2 -> w1
+z2 -> w2
+z2 -> x
 z1 -> y
 z1 -> x
+z1 -> w1
 z2 -> z1
 t1 -> z2
 "
 
-data <- "p(y, w1, z2 | do(x), t1) 
+data <- "p(y, z2 | do(x), t1) 
          p(z1, z2)
 "
 

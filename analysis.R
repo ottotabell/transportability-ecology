@@ -1,4 +1,4 @@
-source("funcs_libs.R")
+source("utils.R")
 
 ####################################
 # Reading and visualising the data #
@@ -42,7 +42,7 @@ ggplot(portland, aes(x = nlcd_2021_ttc_overwater_., y = do_mgl, color = watershe
       "Willamette" = "orange"
     )
   ) +
-#  facet_wrap(~ season) +  # This adds 4 separate panels, one for each season
+  #  facet_wrap(~ season) +  # This adds 4 separate panels, one for each season
   theme_minimal()
 
 ##########################
@@ -62,12 +62,12 @@ fanno_bd_target <- boot_backdoor(2500, canopy = fanno_canopy,
                                  portland %>% filter(watershed == "Fanno Creek"))
 
 fanno_fd_source <- boot_frontdoor(2500, canopy = fanno_canopy, 
-                                 portland %>% filter(watershed != "Fanno Creek"))
+                                  portland %>% filter(watershed != "Fanno Creek"))
 fanno_fd_trans <- boot_frontdoor(2500, canopy = fanno_canopy, 
-                                portland %>% filter(watershed != "Fanno Creek"), 
-                                portland %>% filter(watershed == "Fanno Creek"))
-fanno_fd_target <- boot_frontdoor(2500, canopy = fanno_canopy, 
+                                 portland %>% filter(watershed != "Fanno Creek"), 
                                  portland %>% filter(watershed == "Fanno Creek"))
+fanno_fd_target <- boot_frontdoor(2500, canopy = fanno_canopy, 
+                                  portland %>% filter(watershed == "Fanno Creek"))
 
 plot_bootstrap_comparison(list(
   as.data.frame(fanno_bd_source),
@@ -89,20 +89,20 @@ plot_bootstrap_comparison(list(
 johnson_canopy <- c(45, 50, 55, 60)
 
 johnson_bd_source <- boot_backdoor(2500, canopy = johnson_canopy,
-                                 portland %>% filter(watershed != "Johnson Creek"))
+                                   portland %>% filter(watershed != "Johnson Creek"))
 johnson_bd_trans <- boot_backdoor(2500, canopy = johnson_canopy,
-                                portland %>% filter(watershed != "Johnson Creek"),
-                                portland %>% filter(watershed == "Johnson Creek"))
+                                  portland %>% filter(watershed != "Johnson Creek"),
+                                  portland %>% filter(watershed == "Johnson Creek"))
 johnson_bd_target <- boot_backdoor(2500, canopy = johnson_canopy,
-                                 portland %>% filter(watershed == "Johnson Creek"))
+                                   portland %>% filter(watershed == "Johnson Creek"))
 
 johnson_fd_source <- boot_frontdoor(2500, canopy = johnson_canopy,
-                                  portland %>% filter(watershed != "Johnson Creek"))
+                                    portland %>% filter(watershed != "Johnson Creek"))
 johnson_fd_trans <- boot_frontdoor(2500, canopy = johnson_canopy,
-                                 portland %>% filter(watershed != "Johnson Creek"),
-                                 portland %>% filter(watershed == "Johnson Creek"))
+                                   portland %>% filter(watershed != "Johnson Creek"),
+                                   portland %>% filter(watershed == "Johnson Creek"))
 johnson_fd_target <- boot_frontdoor(2500, canopy = johnson_canopy,
-                                  portland %>% filter(watershed == "Johnson Creek"))
+                                    portland %>% filter(watershed == "Johnson Creek"))
 
 plot_bootstrap_comparison(list(
   as.data.frame(johnson_bd_source),
@@ -124,20 +124,20 @@ plot_bootstrap_comparison(list(
 willamette_canopy <- c(57, 58, 59, 60)
 
 willamette_bd_source <- boot_backdoor(2500, canopy = willamette_canopy, 
-                                   portland %>% filter(watershed != "Willamette"))
+                                      portland %>% filter(watershed != "Willamette"))
 willamette_bd_trans <- boot_backdoor(2500, canopy = willamette_canopy, 
-                                  portland %>% filter(watershed != "Willamette"), 
-                                  portland %>% filter(watershed == "Willamette"))
+                                     portland %>% filter(watershed != "Willamette"), 
+                                     portland %>% filter(watershed == "Willamette"))
 willamette_bd_target <- boot_backdoor(2500, canopy = willamette_canopy, 
-                                   portland %>% filter(watershed == "Willamette"))
+                                      portland %>% filter(watershed == "Willamette"))
 
 willamette_fd_source <- boot_frontdoor(2500, canopy = willamette_canopy, 
-                                    portland %>% filter(watershed != "Willamette"))
+                                       portland %>% filter(watershed != "Willamette"))
 willamette_fd_trans <- boot_frontdoor(2500, canopy = willamette_canopy, 
-                                   portland %>% filter(watershed != "Willamette"), 
-                                   portland %>% filter(watershed == "Willamette"))
+                                      portland %>% filter(watershed != "Willamette"), 
+                                      portland %>% filter(watershed == "Willamette"))
 willamette_fd_target <- boot_frontdoor(2500, canopy = willamette_canopy, 
-                                    portland %>% filter(watershed == "Willamette"))
+                                       portland %>% filter(watershed == "Willamette"))
 
 plot_bootstrap_comparison(list(
   as.data.frame(willamette_bd_source),
@@ -158,20 +158,20 @@ plot_bootstrap_comparison(list(
 tryon_canopy <- c(62, 64, 66, 68)
 
 tryon_bd_source <- boot_backdoor(2500, canopy = tryon_canopy, 
-                                      portland %>% filter(watershed != "Tryon Creek"))
+                                 portland %>% filter(watershed != "Tryon Creek"))
 tryon_bd_trans <- boot_backdoor(2500, canopy = tryon_canopy, 
-                                     portland %>% filter(watershed != "Tryon Creek"), 
-                                     portland %>% filter(watershed == "Tryon Creek"))
+                                portland %>% filter(watershed != "Tryon Creek"), 
+                                portland %>% filter(watershed == "Tryon Creek"))
 tryon_bd_target <- boot_backdoor(2500, canopy = tryon_canopy, 
-                                      portland %>% filter(watershed == "Tryon Creek"))
+                                 portland %>% filter(watershed == "Tryon Creek"))
 
 tryon_fd_source <- boot_frontdoor(2500, canopy = tryon_canopy, 
-                                       portland %>% filter(watershed != "Tryon Creek"))
+                                  portland %>% filter(watershed != "Tryon Creek"))
 tryon_fd_trans <- boot_frontdoor(2500, canopy = tryon_canopy, 
-                                      portland %>% filter(watershed != "Tryon Creek"), 
-                                      portland %>% filter(watershed == "Tryon Creek"))
+                                 portland %>% filter(watershed != "Tryon Creek"), 
+                                 portland %>% filter(watershed == "Tryon Creek"))
 tryon_fd_target <- boot_frontdoor(2500, canopy = tryon_canopy, 
-                                       portland %>% filter(watershed == "Tryon Creek"))
+                                  portland %>% filter(watershed == "Tryon Creek"))
 
 plot_bootstrap_comparison(list(
   as.data.frame(tryon_bd_source),
@@ -192,20 +192,20 @@ plot_bootstrap_comparison(list(
 kellogg_canopy <- c(35, 40, 45, 50)
 
 kellogg_bd_source <- boot_backdoor(2500, canopy = kellogg_canopy, 
-                                 portland %>% filter(watershed != "Kellogg Creek"))
+                                   portland %>% filter(watershed != "Kellogg Creek"))
 kellogg_bd_trans <- boot_backdoor(2500, canopy = kellogg_canopy, 
-                                portland %>% filter(watershed != "Kellogg Creek"), 
-                                portland %>% filter(watershed == "Kellogg Creek"))
+                                  portland %>% filter(watershed != "Kellogg Creek"), 
+                                  portland %>% filter(watershed == "Kellogg Creek"))
 kellogg_bd_target <- boot_backdoor(2500, canopy = kellogg_canopy, 
-                                 portland %>% filter(watershed == "Kellogg Creek"))
+                                   portland %>% filter(watershed == "Kellogg Creek"))
 
 kellogg_fd_source <- boot_frontdoor(2500, canopy = kellogg_canopy, 
-                                  portland %>% filter(watershed != "Kellogg Creek"))
+                                    portland %>% filter(watershed != "Kellogg Creek"))
 kellogg_fd_trans <- boot_frontdoor(2500, canopy = kellogg_canopy, 
-                                 portland %>% filter(watershed != "Kellogg Creek"), 
-                                 portland %>% filter(watershed == "Kellogg Creek"))
+                                   portland %>% filter(watershed != "Kellogg Creek"), 
+                                   portland %>% filter(watershed == "Kellogg Creek"))
 kellogg_fd_target <- boot_frontdoor(2500, canopy = kellogg_canopy, 
-                                  portland %>% filter(watershed == "Kellogg Creek"))
+                                    portland %>% filter(watershed == "Kellogg Creek"))
 
 plot_bootstrap_comparison(list(
   as.data.frame(kellogg_bd_source),
